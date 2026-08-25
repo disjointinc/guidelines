@@ -1,0 +1,39 @@
+name: "Use Disjoint guidelines"
+author: "Disjoint"
+description: >
+  Sync Disjoint's agent and contributor guidelines into your repo, wrapped in
+  a clearly marked block. Only the block is ever modified; everything else in
+  your files is left alone.
+branding:
+  icon: "align-left"
+  color: "blue"
+inputs:
+  files:
+    description: >
+      Comma-separated list of guideline files to sync, e.g.
+      "AGENTS.md, CLAUDE.md". Defaults to every top-level .md file in the
+      source repo except README.md.
+    required: false
+    default: ""
+  ref:
+    description: "Branch, tag, or SHA of the source repo to sync from."
+    required: false
+    default: "main"
+  repo:
+    description: "Source repo to sync guidelines from."
+    required: false
+    default: "disjointinc/guidelines"
+runs:
+  using: "composite"
+  steps:
+    - name: Sync guidelines
+      shell: bash
+      env:
+        INPUT_FILES: ${{ inputs.files }}
+        INPUT_REF: ${{ inputs.ref }}
+        INPUT_REPO: ${{ inputs.repo }}
+      run: |
+        bash "${{ github.action_path }}/sync-guidelines.sh" \
+          --files "$INPUT_FILES" \
+          --ref "$INPUT_REF" \
+          --repo "$INPUT_REPO"
